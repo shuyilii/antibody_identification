@@ -1,11 +1,12 @@
 #!/usr/bin/python3
-
-###This is for create a fasta file from the csv file containing information:
-###[isosubtype, part_igh_id, trimmed_sequence, v_segment,stop_codon,productive, v_start pre_seq_aa_q,fr1_seq_aa_q,cdr1_seq_aa_q,fr2_seq_aa_q,cdr2_seq_aa_q,fr3_seq_aa_q,cdr3_seq_aa_q,post_seq_aa_q]
-### Some IMGT v_segment access number have been updated in the database, so in this script it is updated accordingly.
-### input: csv file / output: fasta file
-###> ID | v_segment | isotype | v_start
-###nt_seq OR aa_seq
+'''
+This is for create a fasta file from the csv file containing information:
+[isosubtype, part_igh_id, trimmed_sequence, v_segment,stop_codon,productive, v_start pre_seq_aa_q,fr1_seq_aa_q,cdr1_seq_aa_q,fr2_seq_aa_q,cdr2_seq_aa_q,fr3_seq_aa_q,cdr3_seq_aa_q,post_seq_aa_q]
+Some IMGT v_segment access number have been updated in the database, so in this script it is updated accordingly.
+input: csv file / output: fasta file
+> ID | v_segment | isotype | v_start | q_start
+nt_seq OR aa_seq
+'''
 
 import sys
 
