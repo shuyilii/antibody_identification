@@ -2,3 +2,4 @@ create_ref_database/__pycache__
 create_ref_database/multi_to_single_fasta.py
 create_ref_database/blast_parser_1.py
 create_ref_database/test*
+create_ref_database/.DS_Store
