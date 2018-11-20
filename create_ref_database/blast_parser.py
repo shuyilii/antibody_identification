@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+'''
+The function is used for parsering the blast result of the trimmed sequence to the IMBT constant region database.
+The input is the blast outcome, the output is a dictionary {query_id : [constant_id, position]}
+'''
+
 def blast_parser(blast_outcome):
 
     query_list = []

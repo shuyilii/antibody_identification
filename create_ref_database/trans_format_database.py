@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import sys
-
+'''
+Reformat for the database importing
+'''
 
 with open(sys.argv[1],'r') as fin:
     for line in fin:

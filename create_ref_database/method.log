@@ -1,0 +1,31 @@
+1.Extracting the trimmed sequence from the original file
+  Extracting:
+    > ID | v_segment | isotype | v_start | q_start
+    trimmed_sequence
+    And transform it to a fasta file.
+    Can choose if needed to extract to aa sequence or nt sequence
+  Filter:
+    a-The sequence that is not productive and has stop codon.
+    b-Only select the sequence that belongs to the IgG isosubtype.
+  Modification:
+    Update the V-region ID in the original file with the IMGT database.
+    IGHV1-c* = 1-38-4*
+    ...f* = 69-2*
+    ...d* = 38-3*
+    ...h* = 69-1*
+    ...b* = 38-2*
+    ...a* = 10-1*
+    IGHV2-5*10 = IGHV2-5*02
+    IGHV2-5*07 = IGHV2-5*04
+    IGHV3-43D*01 = IGHV3-43D*03
+
+2.Create the reference database
+  Create the full length sequence for each trimmed sequences
+    Add the remain v region using the information v_start and q_start.
+      v_start: the position of the v region starts of the trimmed sequence
+      q_start - 1 : the number of the v region mismatches at the head of the sequence.
+      Deal with the chimeric sequence: if the mismatches > 20, than we regard it as a chimeric sequence.
+    Add the remain c region using blastn
+      Only take the one with the highest blast score.
+      Deal with the query that has no hits.
+      Deal with the query that has multiple hits.

@@ -34,6 +34,6 @@ usearch -fastx_uniques trans_fulllength_seq.fasta -sizeout -fastaout trans_seq.d
 ##add other database to control FDR (ref:http://www.peptideatlas.org/thisp/    level2 database)
 cat trans_seq.derep.fasta ../database/PA_THISP_Level2_2018-11-01.fasta > ref_database_temp.fasta
 
-##transform the database to the one that
+##transform the database to the one that can be processed by the search engine
 ../antibody_identification/create_ref_database/trans_format_database.py ref_database_temp.fasta > ref_database.fasta
 printf '\nEnd creating database\n'
