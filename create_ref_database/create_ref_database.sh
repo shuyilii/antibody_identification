@@ -18,11 +18,11 @@ makeblastdb -in ../database/Ig_c.fasta -out Ig_c_Nt -dbtype nucl
 mkdir ../blast
 cd ../blast
 blastn -query ../NGS/nt_seq.fasta -db ../blast_database/Ig_c_Nt -evalue 1e-10 -out blast_results.blastn -num_alignments 1 -num_descriptions 1 -num_threads 4 -gapopen 99 -gapextend 9
-printf '\nEnd blast'
+printf '\nEnd blast\n'
 
 ## add the missing c_region and v_region to the trimmed_sequence
-printf '\nStart creating database'
-../antibody_identification/create_ref_database/fulllength.py ../database/Ig_v.fasta ../database/Ig_c_0.fasta blast_results.blastn ../NGS/nt_seq.fasta > full_length.fasta
+printf '\nStart creating database\n'
+../antibody_identification/create_ref_database/fulllength.py ../database/Ig_v.fasta ../database/Ig_c.fasta blast_results.blastn ../NGS/nt_seq.fasta > full_length.fasta
 
 ##translated nucleotide sequence to the amino acid sequence (Version: EMBOSS:6.6.0.0)
 transeq -frame 1 -sformat pearson -sequence full_length.fasta -outseq trans_fulllength_seq.fasta 2> err.log
@@ -36,4 +36,4 @@ cat trans_seq.derep.fasta ../database/PA_THISP_Level2_2018-11-01.fasta > ref_dat
 
 ##transform the database to the one that
 ../antibody_identification/create_ref_database/trans_format_database.py ref_database_temp.fasta > ref_database.fasta
-printf '\nEnd creating database'
+printf '\nEnd creating database\n'
