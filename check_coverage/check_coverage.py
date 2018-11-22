@@ -37,8 +37,29 @@ def combine_dicts(dict1, dict2):
         final_dict[protein].extend(dict2[protein])
     return final_dict
 
-combine_dict = get_protein_dict(sys.argv[1])
-for i in range(2,len(sys.argv)):
+def check_coverage(combine_dict,ref_database):
+    with open(ref_database, 'r') as database:
+        ref_database = {}
+        for line in database:
+            line = line.rstrip()
+            if line.startswith('>'):
+                protein_ID = line.replace('>','')
+            else:
+                ref_database[protein_ID] = line
+    for each in combine_dict:
+        combine_dict[each] = set(combine_dict[each])
+    mapping_dict = {}
+    for protein in ref_database:
+        temp_dict = {}
+        for each in combine_dict[protein]:
+            mapping_pos = [ref_database[protein].find(each) + 1, ref_database[protein].find(each) + len(each)]
+            temp_dict[each] = mapping_pos
+        mapping_dict[protein] = temp_dict
+    print(mapping_dict)
+
+
+combine_dict = get_protein_dict(sys.argv[2])
+for i in range(3,len(sys.argv)):
     combine_dict = combine_dicts(combine_dict, get_protein_dict(sys.argv[i]))
 
-#print(combine_dict)
+check_coverage(combine_dict,sys.argv[1])
