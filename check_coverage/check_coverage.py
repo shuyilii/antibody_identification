@@ -30,7 +30,7 @@ def get_protein_dict(msgf_result):
 
 def combine_dicts(dict1, dict2):
     final_dict = {}
-    protein_set = set(set(dict1.keys()) & set(dict2.keys()))
+    protein_set = set(set(dict1.keys()) | set(dict2.keys()))
     for each in protein_set:
         final_dict[each] = []
     for protein in dict1.keys():
@@ -74,21 +74,21 @@ def merge_reads(position_list):
             saved[1] = en
     yield tuple(saved)
 
-def visualization(each_mapping_list, ref_database_dict, each_merged_list, protein):
+def visualization(file_mapping_dict, ref_database_dict, each_merged_list, protein):
     max_length = len(max(list(ref_database_dict.values()),key = len))
-    reads_num = len(each_mapping_list) + len(each_merged_list)
-    ax = plt.axes(xlim = (0,max_length + 50),ylim = (0,reads_num + 2),
+    reads_num = len(file_mapping_dict) + 2
+    ax = plt.axes(xlim = (0,max_length + 10),ylim = (0,reads_num + 2),
     xticks = range(0, max_length + 50, 40),title = protein)
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
-    ax.arrow(1,1,len(ref_database_dict[protein])-1,0, head_width=0.05, head_length=0.1, fc='r', ec='r')
-    i = 2
+    ax.arrow(1,1,len(ref_database_dict[protein])-1,0, head_width=0.05, head_length=0.1, fc='k', ec='k',width=0.2)
     for merged_pos in each_merged_list:
-        ax.arrow(merged_pos[0], i, merged_pos[1]-merged_pos[0], 0, head_width=0.05, head_length=0.1, fc='g', ec='g')
-        i += 1
-    for mapping_pos in each_mapping_list:
-        ax.arrow(mapping_pos[0], i, mapping_pos[1]-mapping_pos[0], 0, head_width=0.05, head_length=0.1, fc='k', ec='k')
-        i += 1
+        ax.arrow(merged_pos[0], 1, merged_pos[1]-merged_pos[0], 0, head_width=0.05, head_length=0.1, fc='g', ec='g',width=0.2)
+    i = 2
+    for file in file_mapping_dict:
+        for mapping_pos in file_mapping_dict[file]:
+            ax.arrow(mapping_pos[0], i, mapping_pos[1]-mapping_pos[0], 0, head_width=0.05, head_length=0.1, fc='g', ec='g',width=0.08)
+        i +=1
     plt.show()
 
 combine_dict = get_protein_dict(sys.argv[2])
@@ -120,4 +120,19 @@ for protein in ref_database_dict:
     print('Position:' + str(pos_list) + '\n')
 
 protein = input("Which protein do you want to visualize?:")
-visualization(mapping_dict[protein],ref_database_dict, merged_dict[protein], protein)
+file_dict = {}
+for file in sys.argv[2:]:
+    if protein in get_protein_dict(file):
+        temp_list = []
+        file_dict[file] = get_protein_dict(file)[protein]
+    else:
+        file_dict[file] = []
+file_mapping_dict = {}
+for each in file_dict:
+    temp_list = []
+    for pep in file_dict[each]:
+        mapping_pos = (ref_database_dict[protein].find(pep) + 1, ref_database_dict[protein].find(pep) + len(pep))
+        temp_list.append(mapping_pos)
+    file_mapping_dict[each] = set(temp_list)
+
+visualization(file_mapping_dict, ref_database_dict, merged_dict[protein], protein)
