@@ -3,6 +3,7 @@
 import pandas as pd
 from itertools import combinations
 import sys
+import matplotlib.pyplot as plt
 
 def get_protein_set(msgf_result):
     protein_list = []
@@ -73,6 +74,23 @@ def merge_reads(position_list):
             saved[1] = en
     yield tuple(saved)
 
+def visualization(each_mapping_list, ref_database_dict, each_merged_list, protein):
+    max_length = len(max(list(ref_database_dict.values()),key = len))
+    reads_num = len(each_mapping_list) + len(each_merged_list)
+    ax = plt.axes(xlim = (0,max_length + 50),ylim = (0,reads_num + 2),
+    xticks = range(0, max_length + 50, 40),title = protein)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    ax.arrow(1,1,len(ref_database_dict[protein])-1,0, head_width=0.05, head_length=0.1, fc='r', ec='r')
+    i = 2
+    for merged_pos in each_merged_list:
+        ax.arrow(merged_pos[0], i, merged_pos[1]-merged_pos[0], 0, head_width=0.05, head_length=0.1, fc='g', ec='g')
+        i += 1
+    for mapping_pos in each_mapping_list:
+        ax.arrow(mapping_pos[0], i, mapping_pos[1]-mapping_pos[0], 0, head_width=0.05, head_length=0.1, fc='k', ec='k')
+        i += 1
+    plt.show()
+
 combine_dict = get_protein_dict(sys.argv[2])
 for i in range(3,len(sys.argv)):
     combine_dict = combine_dicts(combine_dict, get_protein_dict(sys.argv[i]))
@@ -100,3 +118,6 @@ for protein in ref_database_dict:
     print('Coverage:' + str(coverage) + '%')
     print('Contigs:' + str(temp_seq_list))
     print('Position:' + str(pos_list) + '\n')
+
+protein = input("Which protein do you want to visualize?:")
+visualization(mapping_dict[protein],ref_database_dict, merged_dict[protein], protein)
