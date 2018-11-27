@@ -76,28 +76,31 @@ def merge_reads(position_list):
 
 def visualization(file_mapping_dict, ref_database_dict, each_merged_list, protein, coverage):
     max_length = len(ref_database_dict[protein])
-    reads_num = len(file_mapping_dict)
+    file_num = len(file_mapping_dict)
     color_list = ['burlywood','c','m','r','b','y','chartreuse']
-    ax = plt.axes(xlim = (0,max_length + 5),ylim = (0,reads_num + 2 ),
+    ax = plt.axes(xlim = (-10,max_length + 5),ylim = (-file_num-2,file_num + 2 ),
     xticks = range(0, max_length + 50, 40),title = protein)
     ax.axis('off')
     ax.arrow(1+10,1,len(ref_database_dict[protein])-1+10,0, head_width=0.05, head_length=0.1, fc='k', ec='k',width=0.2)
+    plt.text(-50, 1, 'ref_seq' , fontsize=10)
     for merged_pos in each_merged_list:
         ax.arrow(merged_pos[0]+10, 1, merged_pos[1]+10-merged_pos[0], 0, head_width=0.05, head_length=0.1, fc='g', ec='g',width=0.2)
     i = 2
+    temp_dict = {}
     for file in file_mapping_dict:
         color = color_list[i-2]
         for mapping_pos in file_mapping_dict[file]:
             ax.arrow(mapping_pos[0]+10, i, mapping_pos[1]+10-mapping_pos[0], 0, head_width=0.05, head_length=0.1, fc=color, ec=color,width=0.08)
+            plt.text(-40, i, str(i-1) , fontsize=10)
+        temp_dict[str(i-1)] = file
         i +=1
     text_coverage = 'Coverage = ' + str(round(coverage,2)) + '%'
-    text_list = file_mapping_dict.keys()
+    a = 0
+    for each in temp_dict:
+        file_name =  str(each) + ':' + temp_dict[each]
+        plt.text(-10, -file_num+a, file_name , fontsize=10)
+        a += -1
     plt.text(max_length-80, -0.5, text_coverage , fontsize=10)
-    plt.text(5, 1.5, 'ref_seq' , fontsize=10)
-    a = 2
-    for file_name in text_list:
-        plt.text(-10, a+0.5, file_name , fontsize=10)
-        a += 1
     plt.show()
 
 combine_dict = get_protein_dict(sys.argv[2])
