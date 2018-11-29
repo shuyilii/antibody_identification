@@ -1,8 +1,8 @@
-*mapping the identified peptides to the reference protein sequence
+* mapping the identified peptides to the reference protein sequence
 
-*check the mapping coverage
+* check the mapping coverage
 
-*visualize the mapping process
+* visualize the mapping process
 
 usage:
 
