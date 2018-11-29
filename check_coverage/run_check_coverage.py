@@ -10,6 +10,11 @@ parser.add_argument("-i", "--input", help = "Input msgf+ tsv file", nargs=file_n
 parser.add_argument("-c", "--cutoff", help = "The cutoff threshold of Q-value",type = float)
 args = parser.parse_args()
 
+if len(sys.argv) < 8:
+    print('usage: run_check_coverage.py [-h] [-r REF] [-i] [-c CUTOFF]')
+    print('use "run_check_coverage.py -h" for more information')
+    sys.exit()
+
 combine_dict = get_protein_dict(args.input[0],args.cutoff)
 for i in range(1,len(args.input)):
     combine_dict = combine_dicts(combine_dict, get_protein_dict(args.input[i], args.cutoff))
