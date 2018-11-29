@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-import pandas as pd
-from itertools import combinations
 import sys
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def get_protein_set(msgf_result):
     protein_list = []
@@ -16,7 +15,7 @@ def get_protein_set(msgf_result):
         protein_set = set(protein_list)
     return protein_set
 
-def get_protein_dict(msgf_result):
+def get_protein_dict(msgf_result,cutoff):
     protein_set = get_protein_set(msgf_result)
     protein_dict = {}
     for each in protein_set:
@@ -24,8 +23,10 @@ def get_protein_dict(msgf_result):
     msgf = pd.read_csv(msgf_result, sep = '\t')
     for i in range(len(msgf.index)):
         protein = msgf.iloc[i]['Protein']
+        Q_value = msgf.iloc[i]['QValue']
         peptide = ''.join([i for i in msgf.iloc[i]['Peptide'][2:-2] if not i.isdigit()]).replace('+.','')
-        protein_dict[protein].append(peptide)
+        if Q_value <= cutoff:
+            protein_dict[protein].append(peptide)
     return protein_dict
 
 def combine_dicts(dict1, dict2):
@@ -77,74 +78,30 @@ def merge_reads(position_list):
 def visualization(file_mapping_dict, ref_database_dict, each_merged_list, protein, coverage):
     max_length = len(ref_database_dict[protein])
     file_num = len(file_mapping_dict)
-    color_list = ['burlywood','c','m','r','b','y','chartreuse']
-    ax = plt.axes(xlim = (-10,max_length + 5),ylim = (-file_num-2,file_num + 2 ),
-    xticks = range(0, max_length + 50, 40),title = protein)
+    color_list = ['burlywood','c','m','r','b','y','chartreuse','burlywood','c','m','r','b','y','chartreuse']
+    ax = plt.axes(xlim = (-10 , max_length + 5),ylim = (-file_num - 2,file_num + 2 ),title = protein)
     ax.axis('off')
-    ax.arrow(1+10,1,len(ref_database_dict[protein])-1+10,0, head_width=0.05, head_length=0.1, fc='k', ec='k',width=0.2)
-    plt.text(-50, 1, 'ref_seq' , fontsize=10)
+    ax.arrow(1+10,1,len(ref_database_dict[protein])-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.2)
+    plt.text(-40, 1, 'ref_seq' , fontsize=10)
     for merged_pos in each_merged_list:
-        ax.arrow(merged_pos[0]+10, 1, merged_pos[1]+10-merged_pos[0], 0, head_width=0.05, head_length=0.1, fc='g', ec='g',width=0.2)
+        ax.arrow(merged_pos[0]+10, 1, merged_pos[1] - merged_pos[0], 0, head_width=0, head_length=0, fc='g', ec='g',width=0.2)
     i = 2
     temp_dict = {}
     for file in file_mapping_dict:
         color = color_list[i-2]
-        for mapping_pos in file_mapping_dict[file]:
-            ax.arrow(mapping_pos[0]+10, i, mapping_pos[1]+10-mapping_pos[0], 0, head_width=0.05, head_length=0.1, fc=color, ec=color,width=0.08)
+        if len(file_mapping_dict[file]) != 0:
+            for mapping_pos in file_mapping_dict[file]:
+                ax.arrow(mapping_pos[0]+10, i, mapping_pos[1] - mapping_pos[0], 0, head_width=0, head_length=0, fc=color, ec=color,width=0.1)
+                plt.text(-40, i, str(i-1) , fontsize=10)
+        else:
             plt.text(-40, i, str(i-1) , fontsize=10)
         temp_dict[str(i-1)] = file
         i +=1
     text_coverage = 'Coverage = ' + str(round(coverage,2)) + '%'
-    a = 0
+    a = 3
     for each in temp_dict:
-        file_name =  str(each) + ':' + temp_dict[each]
+        file_name = 'Dataset ' + str(each) + ':' + temp_dict[each]
         plt.text(-10, -file_num+a, file_name , fontsize=10)
         a += -1
     plt.text(max_length-80, -0.5, text_coverage , fontsize=10)
     plt.show()
-
-combine_dict = get_protein_dict(sys.argv[2])
-for i in range(3,len(sys.argv)):
-    combine_dict = combine_dicts(combine_dict, get_protein_dict(sys.argv[i]))
-
-mapping_dict = get_mapping_dict(combine_dict,sys.argv[1])
-
-merged_dict = {}
-for protein in mapping_dict:
-    sorted_list = sorted(mapping_dict[protein], key=lambda tup: tup[0])
-    merged_dict[protein] = list(merge_reads(sorted_list))
-
-ref_database_dict = get_ref_dict(sys.argv[1])
-for protein in ref_database_dict:
-    full_length = len(ref_database_dict[protein])
-    pos_list = merged_dict[protein]
-    temp_pos_list = []
-    temp_seq_list = []
-    for each in pos_list:
-        temp_length = each[1] - each[0] + 1
-        temp_pos_list.append(temp_length)
-        temp_seq_list.append(ref_database_dict[protein][each[0]-1:each[1]])
-    mapping_length = sum(temp_pos_list)
-    coverage = (mapping_length/full_length)*100
-    print('Protein:' + protein)
-    print('Coverage:' + str(coverage) + '%')
-    print('Contigs:' + str(temp_seq_list))
-    print('Position:' + str(pos_list) + '\n')
-
-protein = input("Which protein do you want to visualize?:")
-file_dict = {}
-for file in sys.argv[2:]:
-    if protein in get_protein_dict(file):
-        temp_list = []
-        file_dict[file] = get_protein_dict(file)[protein]
-    else:
-        file_dict[file] = []
-file_mapping_dict = {}
-for each in file_dict:
-    temp_list = []
-    for pep in file_dict[each]:
-        mapping_pos = (ref_database_dict[protein].find(pep) + 1, ref_database_dict[protein].find(pep) + len(pep))
-        temp_list.append(mapping_pos)
-    file_mapping_dict[each] = set(temp_list)
-
-visualization(file_mapping_dict, ref_database_dict, merged_dict[protein], protein, coverage)
