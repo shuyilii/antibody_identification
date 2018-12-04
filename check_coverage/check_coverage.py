@@ -14,9 +14,10 @@ def get_protein_set(msgf_result):
         protein_set = set(protein_list)
     return protein_set
 
-def get_protein_dict(msgf_result,cutoff):
+def get_protein_dict(msgf_result,cutoff1,cutoff2):
     protein_set = get_protein_set(msgf_result)
     protein_dict = {}
+    protein_list_passed_strict_cutoff = []
     for each in protein_set:
         protein_dict[each] = []
     ####too slow for using
@@ -32,11 +33,21 @@ def get_protein_dict(msgf_result,cutoff):
         for line in msgf:
             line = line.rstrip()
             element_list = line.split('\t')
+            protein = element_list[10]
+            Q_value = float(element_list[15])
+            if Q_value <= cutoff1:
+                protein_list_passed_strict_cutoff.append(protein)
+    with open(msgf_result, 'r') as msgf:
+        next(msgf)
+        for line in msgf:
+            line = line.rstrip()
+            element_list = line.split('\t')
             peptide = ''.join([i for i in element_list[9][2:-2] if not i.isdigit()]).replace('+.','')
             protein = element_list[10]
             Q_value = float(element_list[15])
-            if Q_value <= cutoff:
-                protein_dict[protein].append(peptide)
+            if protein in protein_list_passed_strict_cutoff:
+                if Q_value <= cutoff2:
+                    protein_dict[protein].append(peptide)
     return protein_dict
 
 def combine_dicts(dict1, dict2):

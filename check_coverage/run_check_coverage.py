@@ -3,21 +3,22 @@
 import argparse
 from check_coverage import *
 
-file_num = len(sys.argv) - 6
+file_num = len(sys.argv) - 8
 parser = argparse.ArgumentParser(description="sample usage: run_check_coverage.py -r ref_database.fasta -i data1.tsv data2.tsv data3.tsv ... -c 0.01")
 parser.add_argument("-r", "--ref", help = "Reference fasta file")
 parser.add_argument("-i", "--input", help = "Input msgf+ tsv file", nargs=file_num)
-parser.add_argument("-c", "--cutoff", help = "The cutoff threshold of Q-value",type = float)
+parser.add_argument("-c1", "--cutoff1", help = "The strict cutoff threshold of Q-value",type = float)
+parser.add_argument("-c2", "--cutoff2", help = "The loose cutoff threshold of Q-value",type = float)
 args = parser.parse_args()
 
-if len(sys.argv) < 8:
-    print('usage: run_check_coverage.py [-h] [-r REF] [-i] [-c CUTOFF]')
+if len(sys.argv) < 9:
+    print('usage: run_check_coverage.py [-h] [-r REF] [-i] [-c1 CUTOFF] [-c2 CUTOFF2]')
     print('use "run_check_coverage.py -h" for more information')
     sys.exit()
 
-combine_dict = get_protein_dict(args.input[0],args.cutoff)
+combine_dict = get_protein_dict(args.input[0], args.cutoff1, args.cutoff2)
 for i in range(1,len(args.input)):
-    combine_dict = combine_dicts(combine_dict, get_protein_dict(args.input[i], args.cutoff))
+    combine_dict = combine_dicts(combine_dict, get_protein_dict(args.input[i], args.cutoff1, args.cutoff2))
 
 mapping_dict = get_mapping_dict(combine_dict,args.ref)
 
@@ -49,9 +50,9 @@ for protein in ref_database_dict:
 protein = input("Which protein do you want to visualize?:")
 file_dict = {}
 for file in args.input:
-    if protein in get_protein_dict(file, args.cutoff):
+    if protein in get_protein_dict(file, args.cutoff1, args.cutoff2):
         temp_list = []
-        file_dict[file] = get_protein_dict(file, args.cutoff)[protein]
+        file_dict[file] = get_protein_dict(file, args.cutoff1, args.cutoff2)[protein]
     else:
         file_dict[file] = []
 
