@@ -2,7 +2,6 @@
 
 import sys
 import matplotlib.pyplot as plt
-import pandas as pd
 
 def get_protein_set(msgf_result):
     protein_list = []
@@ -20,13 +19,24 @@ def get_protein_dict(msgf_result,cutoff):
     protein_dict = {}
     for each in protein_set:
         protein_dict[each] = []
-    msgf = pd.read_csv(msgf_result, sep = '\t')
-    for i in range(len(msgf.index)):
-        protein = msgf.iloc[i]['Protein']
-        Q_value = msgf.iloc[i]['QValue']
-        peptide = ''.join([i for i in msgf.iloc[i]['Peptide'][2:-2] if not i.isdigit()]).replace('+.','')
-        if Q_value <= cutoff:
-            protein_dict[protein].append(peptide)
+    ####too slow for using
+    #msgf = pd.read_csv(msgf_result, sep = '\t')
+    # for i in range(len(msgf.index)):
+    #     protein = msgf.iloc[i]['Protein']
+    #     Q_value = msgf.iloc[i]['QValue']
+    #     peptide = ''.join([i for i in msgf.iloc[i]['Peptide'][2:-2] if not i.isdigit()]).replace('+.','')
+    #     if Q_value <= cutoff:
+    #         protein_dict[protein].append(peptide)
+    with open(msgf_result, 'r') as msgf:
+        next(msgf)
+        for line in msgf:
+            line = line.rstrip()
+            element_list = line.split('\t')
+            peptide = ''.join([i for i in element_list[9][2:-2] if not i.isdigit()]).replace('+.','')
+            protein = element_list[10]
+            Q_value = float(element_list[15])
+            if Q_value <= cutoff:
+                protein_dict[protein].append(peptide)
     return protein_dict
 
 def combine_dicts(dict1, dict2):
