@@ -68,10 +68,11 @@ def get_mapping_dict(combine_dict,ref_database):
     mapping_dict = {}
     for protein in ref_database_dict:
         temp_list = []
-        for each in combine_dict[protein]:
-            mapping_pos = (ref_database_dict[protein].find(each) + 1, ref_database_dict[protein].find(each) + len(each))
-            temp_list.append(mapping_pos)
-        mapping_dict[protein] = temp_list
+        if protein in combine_dict.keys():
+            for each in combine_dict[protein]:
+                mapping_pos = (ref_database_dict[protein].find(each) + 1, ref_database_dict[protein].find(each) + len(each))
+                temp_list.append(mapping_pos)
+            mapping_dict[protein] = temp_list
     return mapping_dict
 
 def merge_reads(position_list):

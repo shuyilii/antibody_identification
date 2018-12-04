@@ -29,21 +29,22 @@ for protein in mapping_dict:
 ref_database_dict = get_ref_dict(args.ref)
 coverage_dict = {}
 for protein in ref_database_dict:
-    full_length = len(ref_database_dict[protein])
-    pos_list = merged_dict[protein]
-    temp_pos_list = []
-    temp_seq_list = []
-    for each in pos_list:
-        temp_length = each[1] - each[0] + 1
-        temp_pos_list.append(temp_length)
-        temp_seq_list.append(ref_database_dict[protein][each[0]-1:each[1]])
-    mapping_length = sum(temp_pos_list)
-    coverage = (mapping_length/full_length)*100
-    coverage_dict[protein] = coverage
-    print('Protein:' + protein)
-    print('Coverage:' + str(coverage) + '%')
-    print('Contigs:' + str(temp_seq_list))
-    print('Position:' + str(pos_list) + '\n')
+    if protein in merged_dict:
+        full_length = len(ref_database_dict[protein])
+        pos_list = merged_dict[protein]
+        temp_pos_list = []
+        temp_seq_list = []
+        for each in pos_list:
+            temp_length = each[1] - each[0] + 1
+            temp_pos_list.append(temp_length)
+            temp_seq_list.append(ref_database_dict[protein][each[0]-1:each[1]])
+        mapping_length = sum(temp_pos_list)
+        coverage = (mapping_length/full_length)*100
+        coverage_dict[protein] = coverage
+        print('Protein:' + protein)
+        print('Coverage:' + str(coverage) + '%')
+        print('Contigs:' + str(temp_seq_list))
+        print('Position:' + str(pos_list) + '\n')
 
 protein = input("Which protein do you want to visualize?:")
 file_dict = {}
