@@ -48,7 +48,8 @@ def get_protein_dict(msgf_result,cutoff1,cutoff2):
             if protein in protein_list_passed_strict_cutoff:
                 if Q_value <= cutoff2:
                     protein_dict[protein].append(peptide)
-    return protein_dict
+    final_protein_dict = {k:v for k,v in protein_dict.items() if v}
+    return final_protein_dict
 
 def combine_dicts(dict1, dict2):
     final_dict = {}
@@ -97,30 +98,36 @@ def merge_reads(position_list):
             saved[1] = en
     yield tuple(saved)
 
-def visualization(file_mapping_dict, ref_database_dict, each_merged_list, protein, coverage):
+def visualization(file_mapping_dict, ref_database_dict, pos_dict, each_merged_list, protein, coverage):
     max_length = len(ref_database_dict[protein])
     file_num = len(file_mapping_dict)
     color_list = ['burlywood','c','m','r','b','y','chartreuse','burlywood','c','m','r','b','y','chartreuse']
     ax = plt.axes(xlim = (-10 , max_length + 5),ylim = (-file_num - 2,file_num + 2 ),title = protein)
     ax.axis('off')
-    ax.arrow(1+10,1,len(ref_database_dict[protein])-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.2)
+    ax.arrow(1+10,1,max_length-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.2)
     plt.text(-40, 1, 'ref_seq' , fontsize=10)
+    ax.arrow(1+10,2,max_length-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.1)
+    n = 0
+    for pos in pos_dict[protein][0:6]:
+        color = color_list[n]
+        ax.arrow(int(pos)+10, 2, int(pos_dict[protein][6])-int(pos), 0, head_width=0, head_length=0, fc=color, ec=color,width=0.1)
+        n += 1
     for merged_pos in each_merged_list:
         ax.arrow(merged_pos[0]+10, 1, merged_pos[1] - merged_pos[0], 0, head_width=0, head_length=0, fc='g', ec='g',width=0.2)
-    i = 2
+    i = 3
     temp_dict = {}
     for file in file_mapping_dict:
         color = color_list[i-2]
         if len(file_mapping_dict[file]) != 0:
             for mapping_pos in file_mapping_dict[file]:
                 ax.arrow(mapping_pos[0]+10, i, mapping_pos[1] - mapping_pos[0], 0, head_width=0, head_length=0, fc=color, ec=color,width=0.1)
-                plt.text(-40, i, str(i-1) , fontsize=10)
+                plt.text(-40, i, str(i-2) , fontsize=10)
         else:
-            plt.text(-40, i, str(i-1) , fontsize=10)
-        temp_dict[str(i-1)] = file
+            plt.text(-40, i, str(i-2) , fontsize=10)
+        temp_dict[str(i-2)] = file
         i +=1
     text_coverage = 'Coverage = ' + str(round(coverage,2)) + '%'
-    a = 3
+    a = file_num - 2
     for each in temp_dict:
         file_name = 'Dataset ' + str(each) + ':' + temp_dict[each]
         plt.text(-10, -file_num+a, file_name , fontsize=10)
