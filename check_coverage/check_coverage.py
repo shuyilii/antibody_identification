@@ -87,6 +87,16 @@ def get_mapping_dict(combine_dict,ref_database):
             mapping_dict[protein] = temp_list
     return mapping_dict
 
+def get_pos_dict(pos_file):
+    pos_dict = {}
+    with open(pos_file, 'r') as file:
+        for line in file:
+            if line.startswith('>'):
+                ID = line.rstrip().replace('>','')
+            else:
+                pos_dict[ID] = line.rstrip().split(' ')
+    return pos_dict
+
 def merge_reads(position_list):
     saved = list(position_list[0])
     for st, en in sorted([sorted(t) for t in position_list]):
@@ -104,16 +114,16 @@ def visualization(file_mapping_dict, ref_database_dict, pos_dict, each_merged_li
     color_list = ['burlywood','c','m','r','b','y','chartreuse','burlywood','c','m','r','b','y','chartreuse']
     ax = plt.axes(xlim = (-10 , max_length + 5),ylim = (-file_num - 2,file_num + 2 ),title = protein)
     ax.axis('off')
-    ax.arrow(1+10,1,max_length-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.2)
-    plt.text(-40, 1, 'ref_seq' , fontsize=10)
-    ax.arrow(1+10,2,max_length-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.1)
+    ax.arrow(1+10,1,max_length-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.1)
+    plt.text(-40, 1.25, 'ref_seq' , fontsize=10)
+    ax.arrow(1+10,1.5,max_length-1 , 0 , head_width=0, head_length=0, fc='k', ec='k',width=0.1)
     n = 0
     for pos in pos_dict[protein][0:6]:
         color = color_list[n]
-        ax.arrow(int(pos)+10, 2, int(pos_dict[protein][6])-int(pos), 0, head_width=0, head_length=0, fc=color, ec=color,width=0.1)
+        ax.arrow(int(pos)+10, 1.5, int(pos_dict[protein][6])-int(pos), 0, head_width=0, head_length=0, fc=color, ec=color,width=0.1)
         n += 1
     for merged_pos in each_merged_list:
-        ax.arrow(merged_pos[0]+10, 1, merged_pos[1] - merged_pos[0], 0, head_width=0, head_length=0, fc='g', ec='g',width=0.2)
+        ax.arrow(merged_pos[0]+10, 1, merged_pos[1] - merged_pos[0], 0, head_width=0, head_length=0, fc='g', ec='g',width=0.1)
     i = 3
     temp_dict = {}
     for file in file_mapping_dict:

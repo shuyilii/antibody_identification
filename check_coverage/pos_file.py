@@ -13,6 +13,7 @@ with open(full_length_seq, 'r') as full_length_seq:
         else:
             seq_dict[ID] = line
 
+database_trans_dic = {'c':'38-4','f':'69-2','d':'38-3','h':'69-1','b':'38-2','a':'10-1'}
 with open(raw_ngs, 'r') as raw_ngs:
     next(raw_ngs)
     for line in raw_ngs:
@@ -23,7 +24,16 @@ with open(raw_ngs, 'r') as raw_ngs:
         cdr2 = element_list[93].replace(' ','')
         fr3 = element_list[94].replace(' ','')
         cdr3 = element_list[95].replace(' ','')
-        ID = element_list[27]+ '_' + element_list[34]
+        v_segment = element_list[34]
+        if v_segment[6] in list(database_trans_dic.keys()):
+            v_segment = v_segment[0:6] + database_trans_dic[v_segment[6]] + v_segment[7:]
+        if v_segment == 'IGHV2-5*10':
+            v_segment = 'IGHV2-5*02'
+        if v_segment == 'IGHV2-5*07':
+            v_segment = 'IGHV2-5*04'
+        if v_segment == 'IGHV3-43D*01':
+            v_segment = 'IGHV3-43D*03'
+        ID = element_list[27]+ '_' + v_segment
         if ID in seq_dict.keys():
             fr1_pos = seq_dict[ID].find(fr1) +1
             cdr1_pos = seq_dict[ID].find(cdr1) +1
