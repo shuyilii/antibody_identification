@@ -33,38 +33,37 @@ pos_dict = get_pos_dict(args.fr_pos)
 coverage_dict = {}
 for protein in ref_database_dict:
     if protein in merged_dict:
-        full_length = len(ref_database_dict[protein])
-        pos_list = merged_dict[protein]
-        ref_pos_list = [pos_dict[protein][i:i+2] for i in range(0, len(pos_dict[protein]), 1)]
-        fr_name = ['fr1','cdr1','fr2','cdr2','fr3','cdr3']
-        temp_pos_list = []
-        temp_seq_list = []
-        fr_list = []
-        for each in pos_list:
-            temp_length = each[1] - each[0] + 1
-            temp_pos_list.append(temp_length)
-            temp_seq_list.append(ref_database_dict[protein][each[0]-1:each[1]])
-            temp_fr_list = []
-            for n in range(6):
-                if each[0] in range(int(ref_pos_list[n][0]),int(ref_pos_list[n][1])):
-                    temp_fr_list.append(fr_name[n])
-                if each[1] in range(int(ref_pos_list[n][0]),int(ref_pos_list[n][1])):
-                    temp_fr_list.append(fr_name[n])
-            if len(temp_fr_list) == 1 and temp_fr_list[0] == 'cdr1':
-                temp_fr_list = ['fr1'] + temp_fr_list
-            if len(temp_fr_list) == 1 and temp_fr_list[0] == 'cdr3':
-                temp_fr_list = temp_fr_list + ['constant']
-            fr_list.append(temp_fr_list)
-        mapping_length = sum(temp_pos_list)
-        coverage = (mapping_length/full_length)*100
-        coverage_dict[protein] = coverage
-        if len(temp_seq_list) > 0:
-            print('Protein:' + protein)
-            print('Coverage:' + str(coverage) + '%')
-            print('Contigs:' + str(temp_seq_list))
-            print('Position:' + str(pos_list))
-            print('Ref_seq:' + ref_database_dict[protein])
-            print('Region:' + str(fr_list) + '\n')
+        if protein in pos_dict:
+            full_length = len(ref_database_dict[protein])
+            pos_list = merged_dict[protein]
+            ref_pos_list = [pos_dict[protein][i:i+2] for i in range(0, len(pos_dict[protein]), 1)]
+            fr_name = ['fr1','cdr1','fr2','cdr2','fr3','cdr3']
+            temp_pos_list = []
+            temp_seq_list = []
+            fr_list = []
+            for each in pos_list:
+                temp_length = each[1] - each[0] + 1
+                temp_pos_list.append(temp_length)
+                temp_seq_list.append(ref_database_dict[protein][each[0]-1:each[1]])
+                temp_fr_list = []
+                for n in range(6):
+                    if each[0] in range(int(ref_pos_list[n][0]),int(ref_pos_list[n][1])):
+                        temp_fr_list.append(fr_name[n])
+                    if each[1] in range(int(ref_pos_list[n][0]),int(ref_pos_list[n][1])):
+                        temp_fr_list.append(fr_name[n])
+                if len(temp_fr_list) == 1 and temp_fr_list[0] == 'cdr1':
+                    temp_fr_list = ['fr1'] + temp_fr_list
+                fr_list.append(temp_fr_list)
+            mapping_length = sum(temp_pos_list)
+            coverage = (mapping_length/full_length)*100
+            coverage_dict[protein] = coverage
+            if len(temp_seq_list) > 0:
+                print('Protein:' + protein)
+                print('Coverage:' + str(coverage) + '%')
+                print('Contigs:' + str(temp_seq_list))
+                print('Position:' + str(pos_list))
+                print('Ref_seq:' + ref_database_dict[protein])
+                print('Region:' + str(fr_list) + '\n')
 
 # while 1:
 #     protein = input("Which protein do you want to visualize?(print exit if you want to exit):")
