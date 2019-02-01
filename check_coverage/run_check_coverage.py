@@ -60,7 +60,7 @@ for protein in ref_database_dict:
             if len(temp_seq_list) > 0:
                 print('Protein:' + protein)
                 print('Coverage:' + str(coverage) + '%')
-                print('Contigs:' + str(temp_seq_list))
+                print('Peptide(s):' + str(temp_seq_list))
                 print('Position:' + str(pos_list))
                 print('Ref_seq:' + ref_database_dict[protein])
                 print('Region:' + str(fr_list) + '\n')
