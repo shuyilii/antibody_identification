@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 import sys
 
-with open(sys.argv[1],'r') as fin:
+run_check_coverage_result = sys.argv[1]
+
+with open(run_check_coverage_result,'r') as fin:
     pro_dict = {}
     for line in fin:
         line = line.rstrip()
@@ -23,5 +25,5 @@ for pep in pep_set:
     pep_dict[pep] = protein_list
 print('Unique peptide number:'+ str(len(pep_dict)))
 for each in pep_dict:
-    print(each)
-    print(str(pep_dict[each])+'\n')
+    print('peptide:' + each)
+    print('protein:' + str(pep_dict[each]) + '\n')
