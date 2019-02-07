@@ -1,5 +1,5 @@
 #!/bin/sh
-
+#Ver: MS-GF+ Release (v2018.10.15) (15 October 2018)
 
 for file in *.mgf
 do
