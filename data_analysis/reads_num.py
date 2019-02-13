@@ -29,8 +29,14 @@ with open(analysis_result, 'r') as fin:
 count = [[x,read_num_list.count(x)] for x in set(read_num_list)]
 pos = [item[0] for item in count]
 num = [item[1] for item in count]
-print(count)
+count.sort(key = lambda x: x[0])
+print('\nreads_num\tantibodies_num\n')
+for each in count:
+    print(str(each[0]) + '\t' + str(each[1]))
 plt.bar(pos, num, width = 1)
-plt.xlim(0, max(pos)+10)
-plt.ylim(0, max(num)+10)
+plt.xlabel('NGS reads number')
+plt.ylabel('antibodies number')
+plt.title(analysis_result.replace('.txt',''))
+plt.scatter(pos,num,s = 8)
 plt.show()
+plt.savefig(analysis_result.replace('.txt',''))
