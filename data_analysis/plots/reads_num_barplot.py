@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import sys
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
 database = sys.argv[1]
 analysis_result = sys.argv[2]

@@ -30,6 +30,10 @@ BorC = B|C
 ABC = AB & C
 all = AorB | C
 subset = (len(all-BorC),len(all-AorC),len(AB-C),len(all-AorB),len(AC-B),len(BC-A),len(ABC))
+print(subset)
+print('Php1:' + str(len(A)))
+print('Php2:' + str(len(B)))
+print('IgG:' + str(len(C)))
 
 plt.figure(figsize = (10,10))
 v = venn3(subsets = subset, set_labels = ('Php1', 'Php2', 'IgG'))
