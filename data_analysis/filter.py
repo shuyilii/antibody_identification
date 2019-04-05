@@ -21,9 +21,15 @@ with open(protein_result, 'r') as f2:
     for line in f2:
         line = line.rstrip()
         if line.startswith('Protein'):
+            hit = False
             pro = line.replace('Protein:','')
+            rare_pep = []
             for each in filtered_pro_id_dict:
                 if pro in filtered_pro_id_dict[each]:
-                    print('Protein:' + pro)
-                    print('Rare peptide:' + each)
-                    print(''.join(islice(f2, 6)))
+                    rare_pep.append(each)
+                    protein = pro
+                    hit = True
+            if hit:
+                print('Protein:' + protein)
+                print('Rare peptide:' + str(rare_pep))
+                print(''.join(islice(f2, 6)))
