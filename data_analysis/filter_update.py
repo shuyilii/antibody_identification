@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#!/usr/bin/python3
+
 import sys
 from colors import *
 ####input files
