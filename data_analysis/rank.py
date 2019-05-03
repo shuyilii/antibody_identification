@@ -62,5 +62,6 @@ for protein in same_protein:
     final_dict[protein] = rank_dict1[protein]-rank_dict2[protein]
 pos_dict = { k: v for k, v in final_dict.items() if v > 0 }
 sorted_tuple = sorted(pos_dict.items(), key=lambda x: x[1], reverse=True)
+print('antibodies' + '\t' + 'Php2' + '\t' + 'IgG' + '\t' + 'rank difference')
 for each in sorted_tuple:
-    print(each[0] + '\t' + str(each[1]))
+    print(each[0] + '\t' + str(rank_dict1[each[0]]) + '\t' + str(rank_dict2[each[0]]) + '\t' + str(each[1]))
