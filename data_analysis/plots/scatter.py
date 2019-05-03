@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import sys
-####import pandas as pd
 from matplotlib import pyplot as plt
 
 A_intens_tsv = sys.argv[1]
@@ -53,10 +52,10 @@ d2 = [[],[]]
 d3 = [[],[]]
 for k in intersect_dict:
     intens = intersect_dict[k]
-    if intens[0] < 5e8:
+    if intens[1] < 1.2e8 and intens[0] < 1.2e8:
         if k in rare_pep_list:
             fold = intens[0]/intens[1]
-            if fold > 3:
+            if fold > 1:
                 d1[0].append(intens[0])
                 d1[1].append(intens[1])
                 interest_pep[k] = fold

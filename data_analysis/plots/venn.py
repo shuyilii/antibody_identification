@@ -3,11 +3,13 @@
 import sys
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib_venn import venn3, venn3_circles
+from matplotlib_venn import venn3, venn3_circles,venn3_unweighted
 
 A_filter = sys.argv[1]
 B_filter = sys.argv[2]
 C_filter = sys.argv[3]
+print('Proportional plot[Y/N]:')
+mood = input()
 
 def get_pro(file):
     with open(file, 'r') as file:
@@ -30,13 +32,12 @@ BorC = B|C
 ABC = AB & C
 all = AorB | C
 subset = (len(all-BorC),len(all-AorC),len(AB-C),len(all-AorB),len(AC-B),len(BC-A),len(ABC))
-print(subset)
-print('Php1:' + str(len(A)))
-print('Php2:' + str(len(B)))
-print('IgG:' + str(len(C)))
 
 plt.figure(figsize = (10,10))
-v = venn3(subsets = subset, set_labels = ('Php1', 'Php2', 'IgG'))
-c = venn3_circles(subsets = subset, linestyle='dashed')
+if mood == 'Y':
+    v = venn3(subsets = subset, set_labels = ('Php1', 'Php2', 'IgG'))
+    c = venn3_circles(subsets = subset, linestyle='dashed')
+else:
+    v = venn3_unweighted(subsets = subset, set_labels = ('Php1', 'Php2', 'IgG'))
 plt.title("Venn diagram of identified antibodies")
 plt.show()
