@@ -10,6 +10,7 @@ pos_file = sys.argv[3]
 fil_num = int(input('The rare peptide should be in no more than how many antibodies:'))
 cov_thres = float(input('The coverage threshold:'))
 cdr3 = input('If only pick those antibodies that have peptides in cdr3[Y or N]:')
+output_file = input('Need an output file[Y or N]:')
 
 with open(uniq_pep, 'r') as f1:
     next(f1)
@@ -43,8 +44,12 @@ def colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos):
         end_pos = start_pos + len(pep)
         rare_pep_pos.append((start_pos, end_pos))
     for pos in rare_pep_pos:
-        if cdr3_pos[0] in range(pos[0],pos[1]) or cdr3_pos[1] in range(pos[0],pos[1]):
+        pos_range = range(pos[0],pos[1])
+        if cdr3_pos[0] in pos_range or cdr3_pos[1] in pos_range:
             if_rare_cdr3 = True
+            hit_range = pos_range
+        else:
+            hit_range = range(0)
     common_pep_pos = [x for x in contigs_hit_pos if x not in rare_pep_pos]
     colored_seq = ''
     for i in range(len(ref_seq)):
@@ -54,7 +59,7 @@ def colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos):
             colored_seq += green(ref_seq[i])
         else:
             colored_seq += ref_seq[i]
-    return colored_seq,if_rare_cdr3
+    return colored_seq,if_rare_cdr3,hit_range
 
 with open(protein_result, 'r') as f3:
     info_dict = {}
@@ -95,16 +100,13 @@ def print_pro(protein):
     if cov > cov_thres:
         if cdr3 == 'Y':
             if colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos)[1]:
-                CAR_hit = False
-                common_contig = ['YYCAR','YYCAK']
-                for each in rare_pep:
-                    if each[-5:] in common_contig:
-                        CAR_hit = True
-                if CAR_hit == False:
+                hit_range = colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos)[2]
+                set_hit = set(hit_range) & set(range(cdr3_pos[0],cdr3_pos[1]))
+                if len(set_hit) > 5:
                     print('Protein:'+ pro_style)
                     print('Ref_seq:' + colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos)[0])
                     print('Hit_pos:' + str(contigs_hit_pos))
-                    print('Coverage:' + str(cov*100)+ '%')
+                    print('Coverage:' + str(cov*100) + '%')
                     print(info_dict[protein][2]+'\n')
         else:
             print('Protein:'+ pro_style)
