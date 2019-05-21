@@ -10,7 +10,6 @@ pos_file = sys.argv[3]
 fil_num = int(input('The rare peptide should be in no more than how many antibodies:'))
 cov_thres = float(input('The coverage threshold:'))
 cdr3 = input('If only pick those antibodies that have peptides in cdr3[Y or N]:')
-output_file = input('Need an output file[Y or N]:')
 
 with open(uniq_pep, 'r') as f1:
     next(f1)
@@ -35,31 +34,6 @@ with open(pos_file, 'r') as f2:
             pos_cdr3_st = line.split(' ')[5]
             pos_cdr3_ed = line.split(' ')[6]
             pos_dict[ID] = (pos_cdr3_st,pos_cdr3_ed)
-
-def colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos):
-    rare_pep_pos = []
-    if_rare_cdr3 = False
-    for pep in rare_pep:
-        start_pos = ref_seq.find(pep)
-        end_pos = start_pos + len(pep)
-        rare_pep_pos.append((start_pos, end_pos))
-    for pos in rare_pep_pos:
-        pos_range = range(pos[0],pos[1])
-        if cdr3_pos[0] in pos_range or cdr3_pos[1] in pos_range:
-            if_rare_cdr3 = True
-            hit_range = pos_range
-        else:
-            hit_range = range(0)
-    common_pep_pos = [x for x in contigs_hit_pos if x not in rare_pep_pos]
-    colored_seq = ''
-    for i in range(len(ref_seq)):
-        if any(start <= i < end for start,end in rare_pep_pos):
-            colored_seq += red(ref_seq[i])
-        elif any(start <= i < end for start,end in common_pep_pos):
-            colored_seq += green(ref_seq[i])
-        else:
-            colored_seq += ref_seq[i]
-    return colored_seq,if_rare_cdr3,hit_range
 
 with open(protein_result, 'r') as f3:
     info_dict = {}
@@ -90,6 +64,46 @@ with open(protein_result, 'r') as f3:
             elif line.startswith('Region'):
                 info_dict[protein].append(line)
 
+def colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos):
+    rare_pep_pos = []
+    if_rare_cdr3 = False
+    for pep in rare_pep:
+        start_pos = ref_seq.find(pep)
+        end_pos = start_pos + len(pep)
+        rare_pep_pos.append((start_pos, end_pos))
+    for pos in rare_pep_pos:
+        pos_range = range(pos[0],pos[1])
+        if cdr3_pos[0] in pos_range or cdr3_pos[1] in pos_range:
+            if_rare_cdr3 = True
+            hit_range = pos_range
+        else:
+            hit_range = range(0)
+    common_pep_pos = [x for x in contigs_hit_pos if x not in rare_pep_pos]
+    colored_seq = ''
+    for i in range(len(ref_seq)):
+        if any(start <= i < end for start,end in rare_pep_pos):
+            colored_seq += red(ref_seq[i])
+        elif any(start <= i < end for start,end in common_pep_pos):
+            colored_seq += green(ref_seq[i])
+        else:
+            colored_seq += ref_seq[i]
+    return colored_seq,if_rare_cdr3,hit_range
+
+def prt(pro_style,ref_seq,rare_pep,contigs_hit_pos,cdr3_pos,cov):
+    print('Protein:' + protein, file = fout)
+    print('Ref_seq:' + ref_seq, file = fout)
+    print('rare_pep:' + str(rare_pep), file = fout)
+    print('Hit_pos:' + str(contigs_hit_pos), file = fout)
+    print('CDR3_pos:' + str(cdr3_pos), file = fout)
+    print('Coverage:' + str(cov*100) + '%', file = fout)
+    print(info_dict[protein][2]+'\n', file = fout)
+    print('Protein:'+ pro_style)
+    print('Ref_seq:' + colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos)[0])
+    print('Hit_pos:' + str(contigs_hit_pos))
+    print('Coverage:' + str(cov*100) + '%')
+    print(info_dict[protein][2]+'\n')
+
+
 def print_pro(protein):
     pro_style = blue(protein, style='bold+underline')
     ref_seq = info_dict[protein][1][0]
@@ -103,17 +117,11 @@ def print_pro(protein):
                 hit_range = colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos)[2]
                 set_hit = set(hit_range) & set(range(cdr3_pos[0],cdr3_pos[1]))
                 if len(set_hit) > 5:
-                    print('Protein:'+ pro_style)
-                    print('Ref_seq:' + colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos)[0])
-                    print('Hit_pos:' + str(contigs_hit_pos))
-                    print('Coverage:' + str(cov*100) + '%')
-                    print(info_dict[protein][2]+'\n')
+                    prt(pro_style,ref_seq,rare_pep,contigs_hit_pos,cdr3_pos,cov)
         else:
-            print('Protein:'+ pro_style)
-            print('Ref_seq:' + colored_seq(ref_seq,rare_pep,contigs_hit_pos,cdr3_pos)[0])
-            print('Hit_pos:' + str(contigs_hit_pos))
-            print('Coverage:' + str(cov*100) + '%')
-            print(info_dict[protein][2]+'\n')
+            prt(pro_style,ref_seq,rare_pep,contigs_hit_pos,cdr3_pos,cov)
 
-for protein in info_dict:
-    print_pro(protein)
+output_file_name = protein_result.replace('.txt','') + '_result.txt'
+with open(output_file_name, 'w') as fout:
+    for protein in info_dict:
+        print_pro(protein)
