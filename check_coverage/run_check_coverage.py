@@ -65,25 +65,25 @@ for protein in ref_database_dict:
                 print('Ref_seq:' + ref_database_dict[protein])
                 print('Region:' + str(fr_list) + '\n')
 
-# while 1:
-#     protein = input("Which protein do you want to visualize?(print exit if you want to exit):")
-#     if protein == 'exit':
-#         sys.exit()
-#     else:
-#         file_dict = {}
-#         for file in args.input:
-#             if protein in get_protein_dict(file, args.cutoff1, args.cutoff2):
-#                 temp_list = []
-#                 file_dict[file] = get_protein_dict(file, args.cutoff1, args.cutoff2)[protein]
-#             else:
-#                 file_dict[file] = []
-#
-#         file_mapping_dict = {}
-#         for each in file_dict:
-#             temp_list = []
-#             for pep in file_dict[each]:
-#                 mapping_pos = (ref_database_dict[protein].find(pep) + 1, ref_database_dict[protein].find(pep) + len(pep))
-#                 temp_list.append(mapping_pos)
-#             file_mapping_dict[each] = set(temp_list)
-#
-#         visualization(file_mapping_dict, ref_database_dict, pos_dict,merged_dict[protein], protein, coverage_dict[protein])
+while 1:
+    protein = input("Which protein do you want to visualize?(print exit if you want to exit):")
+    if protein == 'exit':
+        sys.exit()
+    else:
+        file_dict = {}
+        for file in args.input:
+            if protein in get_protein_dict(file, args.cutoff1, args.cutoff2):
+                temp_list = []
+                file_dict[file] = get_protein_dict(file, args.cutoff1, args.cutoff2)[protein]
+            else:
+                file_dict[file] = []
+
+        file_mapping_dict = {}
+        for each in file_dict:
+            temp_list = []
+            for pep in file_dict[each]:
+                mapping_pos = (ref_database_dict[protein].find(pep) + 1, ref_database_dict[protein].find(pep) + len(pep))
+                temp_list.append(mapping_pos)
+            file_mapping_dict[each] = set(temp_list)
+
+        visualization(file_mapping_dict, ref_database_dict, pos_dict,merged_dict[protein], protein, coverage_dict[protein])

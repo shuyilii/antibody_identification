@@ -1,17 +1,26 @@
 #!/usr/bin/python3
 
 import sys
+import argparse
 from colors import *
-####input files
-protein_result = sys.argv[1]
-uniq_pep = sys.argv[2]
-pos_file = sys.argv[3]
+
 ####input args
 fil_num = int(input('The rare peptide should be in no more than how many antibodies:'))
 cov_thres = float(input('The coverage threshold:'))
 cdr3 = input('If only pick those antibodies that have peptides in cdr3[Y or N]:')
 
-with open(uniq_pep, 'r') as f1:
+parser = argparse.ArgumentParser(description = "sample usage: filter_update.py -r IgG.txt -u IgG_uniq_pep.txt -p pos_file")
+parser.add_argument("-r", "--result", help = "antibodies identification txt file")
+parser.add_argument("-u", "--uniq_pep", help = "Input file containing all uniq identified peptides")
+parser.add_argument("-p", "--fr_pos", help = "The position information file of framework and cdr region")
+args = parser.parse_args()
+
+if len(sys.argv) < 7:
+    print('usage: filter_update.py [-h] [-r RESULT] [-u UNIQ_PEP] [-p FR_POS]')
+    print('use "filter_update.py -h" for more information')
+    sys.exit()
+
+with open(args.uniq_pep, 'r') as f1:
     next(f1)
     pep_dict = {}
     for line in f1:
@@ -24,7 +33,7 @@ with open(uniq_pep, 'r') as f1:
 
 filtered_pro_id_dict = dict((k, v) for k, v in pep_dict.items() if len(v) <= fil_num)
 
-with open(pos_file, 'r') as f2:
+with open(args.fr_pos, 'r') as f2:
     pos_dict = {}
     for line in f2:
         line = line.rstrip()
@@ -35,7 +44,7 @@ with open(pos_file, 'r') as f2:
             pos_cdr3_ed = line.split(' ')[6]
             pos_dict[ID] = (pos_cdr3_st,pos_cdr3_ed)
 
-with open(protein_result, 'r') as f3:
+with open(args.result, 'r') as f3:
     info_dict = {}
     for line in f3:
         line = line.rstrip()
@@ -121,7 +130,7 @@ def print_pro(protein):
         else:
             prt(pro_style,ref_seq,rare_pep,contigs_hit_pos,cdr3_pos,cov)
 
-output_file_name = protein_result.replace('.txt','') + '_result.txt'
+output_file_name = args.result.replace('.txt','') + '_result.txt'
 with open(output_file_name, 'w') as fout:
     for protein in info_dict:
         print_pro(protein)
